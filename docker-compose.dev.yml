@@ -1,0 +1,70 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+      target: dev
+    environment:
+      NODE_ENV: development
+      CI: "true"
+      PORT: 3001
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/fakenews
+      REDIS_URL: redis://redis:6379
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5.4-nano}
+      SCRAPE_CRON: ${SCRAPE_CRON}
+      # Improve file watching on macOS bind mounts.
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "3001:3001"
+      - "9229:9229"
+    volumes:
+      - ./:/app
+      - backend_node_modules:/app/apps/backend/node_modules
+      - root_node_modules:/app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      target: dev
+    environment:
+      NODE_ENV: development
+      CI: "true"
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      # Improve file watching on macOS bind mounts.
+      WATCHPACK_POLLING: "true"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+      - frontend_node_modules:/app/apps/frontend/node_modules
+      - root_node_modules:/app/node_modules
+    depends_on:
+      - backend
+
+  prisma-studio:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+      target: dev
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/fakenews
+    ports:
+      - "5555:5555"
+    command: ["sh", "-c", "cd /app && pnpm --filter backend prisma:studio"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  root_node_modules:
+  backend_node_modules:
+  frontend_node_modules:

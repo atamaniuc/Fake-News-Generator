@@ -1,0 +1,45 @@
+{
+  "name": "frontend",
+  "version": "0.0.1",
+  "description": "frontend for Fake News Generator",
+  "author": {
+    "name": "Dmitri Atamaniuc",
+    "email": "d.atamaniuc@gmail.com",
+    "url": "https://dynosoft.md"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack --hostname 0.0.0.0 --port 3000",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@fakenews/shared": "workspace:*",
+    "@tanstack/react-query": "^5.90.2",
+    "axios": "^1.12.2",
+    "next": "16.2.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "use-next-sse": "^1.0.0",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5.0.4",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.3",
+    "jsdom": "^26.1.0",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^4.1.3"
+  }
+}

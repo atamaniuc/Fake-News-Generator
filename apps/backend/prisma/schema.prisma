@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Source {
+  id       String    @id @default(uuid())
+  name     String
+  feedUrl  String    @unique
+  articles Article[]
+
+  @@map("sources")
+}
+
+model Article {
+  id           String        @id @default(uuid())
+  sourceId     String
+  source       Source        @relation(fields: [sourceId], references: [id])
+  title        String
+  description  String
+  originalUrl  String        @unique
+  publishedAt  DateTime
+  status       ArticleStatus @default(PENDING)
+  errorMessage String?
+  fake         FakeArticle?
+  chatMessages ChatMessage[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([sourceId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@map("articles")
+}
+
+enum ArticleStatus {
+  PENDING
+  TRANSFORMING
+  DONE
+  FAILED
+}
+
+model FakeArticle {
+  id          String   @id @default(uuid())
+  articleId   String   @unique
+  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  fakeTitle   String
+  fakeContent String
+  createdAt   DateTime @default(now())
+
+  @@map("fake_articles")
+}
+
+model ChatMessage {
+  id        String      @id @default(uuid())
+  articleId String
+  article   Article     @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  role      MessageRole
+  content   String
+  // Optional client-generated id to dedupe retries / fallback between streaming and non-streaming requests.
+  requestId String?
+  createdAt DateTime    @default(now())
+
+  @@index([articleId, createdAt])
+  @@unique([articleId, requestId, role])
+  @@map("chat_messages")
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+}

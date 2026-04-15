@@ -1,0 +1,11 @@
+node_modules
+.DS_Store
+
+# Build outputs
+dist
+.next
+coverage
+
+# Local env
+.env
+
