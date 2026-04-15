@@ -18,7 +18,7 @@ export class ScrapeScheduler implements OnModuleInit {
     private readonly scrapeFeeds: ScrapeFeedsUseCase,
   ) {}
 
-    private async runScrape(scrapeMode: ScrapeMode): Promise<void> {
+  private async runScrape(scrapeMode: ScrapeMode): Promise<void> {
     if (this.running) {
       this.logger.warn(`Scrape already running, skipping (${scrapeMode})`);
       return;
