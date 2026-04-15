@@ -1,0 +1,10 @@
+graph TD
+  A["ScrapeScheduler\n(startup + cron)"] --> B["ScrapeFeedsUseCase"]
+  A2["POST /api/scrape\n(manual trigger)"] --> B
+  B --> C["Fetch RSS (NYT/NPR/Guardian)"]
+  C --> D["Upsert Source + Article (dedupe by originalUrl)"]
+  D --> E["Enqueue BullMQ job: transform-article"]
+  E --> F["BullMQ Worker (separate process)"]
+  F --> G["transform.processor.ts\n(PrismaClient + OpenAI client from env)"]
+  G --> H["Create FakeArticle\nUpdate Article.status = DONE/FAILED"]
+  H --> I["GET /api/articles returns DONE only"]

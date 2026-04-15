@@ -1,0 +1,16 @@
+sequenceDiagram
+  participant UI as Browser UI
+  participant API as NestJS (ChatController)
+  participant DB as Postgres (chat_messages)
+  participant LLM as OpenAI-compatible API
+
+  UI->>API: GET /api/articles/:id/chat/stream?message=...&requestId=...
+  API->>DB: upsert USER message (articleId, requestId)
+  API->>LLM: stream completion (context = original + fake + last N messages)
+  loop SSE deltas
+    LLM-->>API: delta chunk
+    API-->>UI: SSE {type:"delta", delta:"..."}
+  end
+  API->>DB: upsert ASSISTANT message (articleId, requestId)
+  API-->>UI: SSE {type:"done", messageId:"..."}
+
