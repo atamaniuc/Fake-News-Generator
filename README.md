@@ -1,4 +1,5 @@
 # Fake News Generator
+[![CI](https://github.com/atamaniuc/Fake-News-Generator/actions/workflows/ci.yml/badge.svg)](https://github.com/atamaniuc/Fake-News-Generator/actions/workflows/ci.yml)
 
 Scrape RSS feeds, asynchronously transform articles into satirical “fake news” via an OpenAI-compatible API, then browse and chat per-article.
 
