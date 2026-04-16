@@ -46,6 +46,13 @@ export class PrismaChatMessageRepository implements ChatMessageRepositoryPort {
     }));
   }
 
+  /**
+   * Retrieves the last N chat messages for a specific article, ordered by their creation time.
+   *
+   * @param {string} articleId - The unique identifier of the article associated with the chat messages.
+   * @param {number} n - The number of messages to retrieve.
+   * @return {Promise<ChatMessage[]>} A promise that resolves to an array of the last N chat messages, ordered from oldest to newest.
+   */
   async listLastN(articleId: string, n: number): Promise<ChatMessage[]> {
     const rows = await this.prisma.chatMessage.findMany({
       where: { articleId },
@@ -60,6 +67,18 @@ export class PrismaChatMessageRepository implements ChatMessageRepositoryPort {
     }));
   }
 
+  /**
+   * Creates a chat message in the database. If a requestId is provided, it attempts to update an
+   * existing message with the same articleId, requestId, and role. If no requestId is provided,
+   * it creates a new message.
+   *
+   * @param {Object} params - The parameters for creating or updating the message.
+   * @param {string} params.articleId - The ID of the article associated with the message.
+   * @param {MessageRole} params.role - The role of the message (e.g., user, assistant).
+   * @param {string} params.content - The content of the message.
+   * @param {string} [params.requestId] - The request ID used for identifying and updating an existing message.
+   * @return {Promise<ChatMessage>} A promise that resolves to the created or updated chat message.
+   */
   async createMessage(params: {
     articleId: string;
     role: MessageRole;

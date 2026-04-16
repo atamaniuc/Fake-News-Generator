@@ -44,11 +44,24 @@ export class ChatController {
     private readonly llm: OpenAiChatAdapter,
   ) {}
 
+  /**
+   * Retrieves the chat history for a specific article.
+   *
+   * @param {string} articleId - The identifier of the article.
+   * @return {Promise<ChatMessage[]>} A promise that resolves with the chat history.
+   */
   @Get()
   async history(@Param('articleId') articleId: string) {
     return this.getHistory.execute(articleId);
   }
 
+  /**
+   * Sends a message associated with a specific article.
+   *
+   * @param {string} articleId - The identifier of the article.
+   * @param {SendMessageDto} dto - The data transfer object containing message details.
+   * @return {Promise<string>} A promise that resolves with the assistant's response.
+   */
   @Post()
   async send(
     @Param('articleId') articleId: string,
@@ -62,6 +75,14 @@ export class ChatController {
     return res.assistant;
   }
 
+  /**
+   * Creates a server-sent event (SSE) stream for processing chat messages and providing live updates.
+   *
+   * @param {string} articleId - The unique identifier of the article associated with the chat messages.
+   * @param {string} [message] - The message to be processed. This parameter is optional but must not be empty if provided.
+   * @param {string} [requestId] - The unique identifier for the request. When specified, it avoids redundant processing for already completed requests.
+   * @return {Observable<MessageEvent>} An Observable that streams `MessageEvent` objects. Events include deltas, errors, rate limits, and completion notifications.
+   */
   @Sse('/stream')
   stream(
     @Param('articleId') articleId: string,

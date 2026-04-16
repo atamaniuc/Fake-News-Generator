@@ -25,6 +25,15 @@ export class SendMessageUseCase {
     private readonly llm: LlmPort,
   ) {}
 
+  /**
+   * Executes the main logic for handling user messages and generating a response from the assistant.
+   *
+   * @param {string} articleId - The unique identifier of the article associated with the conversation.
+   * @param {string} userMessage - The user's message that serves as input for generating a response.
+   * @param {string} [requestId] - An optional unique identifier for the request, used for tracking purposes.
+   * @return {Promise<{ assistant: ChatMessage }>} A promise that resolves to an object containing the assistant's response message.
+   * @throws {Error} If the corresponding article cannot be found in the database.
+   */
   async execute(
     articleId: string,
     userMessage: string,

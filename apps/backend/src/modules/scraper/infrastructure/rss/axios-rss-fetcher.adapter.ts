@@ -4,6 +4,8 @@ import { parseStringPromise } from 'xml2js';
 import type { RawFeedItem } from '../../domain/entities/raw-feed-item.entity';
 import type { RssFetcherPort } from '../../domain/ports/rss-fetcher.port';
 
+// TODO: Move helpers to a separate lib.
+
 function toText(v: unknown): string {
   if (Array.isArray(v)) return toText(v[0]);
   if (typeof v === 'string') return v;
@@ -53,6 +55,10 @@ function extractUrl(it: unknown): string {
   return isRecord(it) ? toText(it.guid) : '';
 }
 
+/**
+ * Adapts RSS/Atom feed fetching using the Axios library, implementing the `RssFetcherPort` interface.
+ * This allows the retrieval of RSS or Atom feed items from a given feed URL.
+ */
 @Injectable()
 export class AxiosRssFetcherAdapter implements RssFetcherPort {
   async fetch(feedUrl: string): Promise<RawFeedItem[]> {

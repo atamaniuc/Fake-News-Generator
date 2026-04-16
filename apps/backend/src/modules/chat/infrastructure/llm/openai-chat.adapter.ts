@@ -26,6 +26,14 @@ export class OpenAiChatAdapter implements LlmPort {
       config.get<string>('OPENAI_MODEL', { infer: true }) ?? 'gpt-5.4-nano';
   }
 
+  /**
+   * Generates a completion for a chat conversation based on the provided messages.
+   * Implements a retry mechanism to handle rate limits from the chat completion provider.
+   *
+   * @param {LlmChatMessage[]} messages - An array of chat messages representing the conversation history.
+   * @return {Promise<string>} A promise that resolves to the generated chat completion as a string.
+   *                           Returns an empty string if no completion is available or an error occurs.
+   */
   async completeChat(messages: LlmChatMessage[]): Promise<string> {
     // Light retry for rate limits (common with Groq/OpenAI-compatible providers).
     for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -51,6 +59,15 @@ export class OpenAiChatAdapter implements LlmPort {
     return '';
   }
 
+  /**
+   * Streams chat responses from an LLM (Language Model) based on the provided messages.
+   * Implemented retry logic for the rate-limiting errors (HTTP 429).
+   * Using a generator to yield streaming responses.
+   *
+   * @param {LlmChatMessage[]} messages - An array of messages to provide as input to the LLM chat model.
+   * Each message should conform to the LlmChatMessage structure.
+   * @return {AsyncIterable<string>} An asynchronous iterable that yields chunks of streamed chat content response as strings.
+   */
   async *streamChat(messages: LlmChatMessage[]): AsyncIterable<string> {
     // If we hit 429 before the stream starts, retry once after waiting.
     let stream: AsyncIterable<unknown> | null = null;

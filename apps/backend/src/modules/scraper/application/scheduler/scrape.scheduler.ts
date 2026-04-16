@@ -18,6 +18,12 @@ export class ScrapeScheduler implements OnModuleInit {
     private readonly scrapeFeeds: ScrapeFeedsUseCase,
   ) {}
 
+  /**
+   * Executes the scraping process for the specified mode. Handles logging and error reporting during the process.
+   *
+   * @param {ScrapeMode} scrapeMode - The mode in which the scrape should be executed ('startup' | 'cron').
+   * @return {Promise<void>} A promise that resolves when the scraping process completes.
+   */
   private async runScrape(scrapeMode: ScrapeMode): Promise<void> {
     if (this.running) {
       this.logger.warn(`Scrape already running, skipping (${scrapeMode})`);
@@ -35,6 +41,12 @@ export class ScrapeScheduler implements OnModuleInit {
     }
   }
 
+  /**
+   * Initializes the module by setting up a cron job for periodic scraping tasks.
+   * It runs the scraping immediately on the startup and then schedules it based on a cron expression.
+   * The cron expression can be configured using the `SCRAPE_CRON` environment variable,
+   * defaulting to each 5 minutes.
+   */
   onModuleInit() {
     const cronExprRaw =
       this.config.get<string>('SCRAPE_CRON', { infer: true }) ?? '';

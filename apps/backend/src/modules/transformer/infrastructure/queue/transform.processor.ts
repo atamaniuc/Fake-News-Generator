@@ -14,6 +14,8 @@ type TransformJob = {
 // BullMQ sandboxed processors run in a separate process and cannot use Nest DI.
 const prisma = new PrismaClient();
 
+// TODO: Move helpers to a separate lib.
+
 function log(msg: string) {
   const ts = new Date().toISOString();
   console.log(`[transform.processor] ${ts} ${msg}`);
@@ -69,6 +71,15 @@ function parseFakeOutput(text: string): {
   return { fakeTitle, fakeContent };
 }
 
+/**
+ * Transforms a news article into a humorous, satirical version and updates its processing status.
+ *
+ * @param {Object} job - The job object containing relevant details for processing.
+ * @param {string|number} [job.id] - The optional unique identifier of the job.
+ * @param {TransformJob} job.data - The data associated with the transformation job, including the article ID.
+ * @return {Promise<void>} A promise that resolves when the processing is complete or when the job is skipped.
+ * @throws Will throw an error if an unrecoverable issue occurs during processing or if the transformation fails.
+ */
 export default async function transformProcessor(job: {
   id?: string | number;
   data: TransformJob;

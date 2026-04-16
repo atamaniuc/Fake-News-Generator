@@ -10,6 +10,19 @@ import { jaccard, tokenize } from '../../../../shared/utils/similarity';
 export class PrismaArticleRepository implements ArticleRepositoryPort {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Inserts or updates an article based on its original URL. If the article already exists, it returns the existing article ID.
+   * Otherwise, it creates a new article after checking for near-duplicate titles and returns the newly created article ID.
+   * Scenario:
+   * - First, it checks if an article with the same original URL already exists. If it does, it returns the existing article ID.
+   * - If no article with the same URL exists, it creates a new source entry if it doesn't exist yet.
+   * - Then, it checks for near-duplicate titles across all sources (lightweight heuristic).
+   *   If a very similar title from a different source appeared recently, it skips creating/enqueueing.
+   * - Finally, it creates a new article with the provided details.
+   *
+   * @param {UpsertArticleInput} item - The input object containing article details such as title, description, original URL, source information, and published date.
+   * @return {Promise<{ created: boolean; articleId: string }>} An object indicating whether a new article was created and the ID of the article.
+   */
   async upsertByOriginalUrl(
     item: UpsertArticleInput,
   ): Promise<{ created: boolean; articleId: string }> {

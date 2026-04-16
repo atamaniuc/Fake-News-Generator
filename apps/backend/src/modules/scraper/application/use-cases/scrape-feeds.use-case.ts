@@ -18,6 +18,15 @@ export class ScrapeFeedsUseCase {
     private readonly transformQueue: TransformQueuePort,
   ) {}
 
+  /**
+   * Executes the process of fetching RSS feed data, deduplicating items,
+   * storing new articles in the repository, and enqueuing transformation tasks.
+   * Filters and deduplicates articles based on title similarity and recent duplicates.
+   *
+   * @return {Promise<{created: number, enqueued: number}>} A promise that resolves to an object containing:
+   * - `created`: The number of new articles successfully created in the repository.
+   * - `enqueued`: The number of transformation tasks successfully enqueued.
+   */
   async execute(): Promise<{ created: number; enqueued: number }> {
     const settled = await Promise.allSettled(
       FEED_SOURCES.map((s) => this.rssFetcher.fetch(s.feedUrl)),
