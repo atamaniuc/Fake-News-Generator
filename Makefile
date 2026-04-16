@@ -94,12 +94,12 @@ envfile:
 
 ## install: Prompt OPENAI_* -> write .env -> run stack by env=dev|prod|local
 install: envfile
-	@pnpm install
 	@if [ "$(env)" = "prod" ]; then \
 	  $(MAKE) up env=prod; \
 	elif [ "$(env)" = "dev" ]; then \
 	  $(MAKE) up env=dev; \
 	elif [ "$(env)" = "local" ]; then \
+	  @pnpm install; \
 	  $(MAKE) local; \
 	else \
 	  echo "$(RED)Unknown env=$(env). Use env=dev|prod|local$(RESET)"; \
